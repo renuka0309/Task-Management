@@ -14,7 +14,7 @@ export default function DetailsPanel() {
 
     return (
 
-        <aside className="w-[260px] border rounded-lg px-5 py-6 ml-5 mb-20 mt-22 h-fit">
+        <aside className="w-[323px] rounded-lg px-5 py-6 mb-10 mt-22 h-fit border border-[#E5E5E5] p-3">
             <div className="flex items-center justify-between">
                 <button
                     onClick={() => setIsOpen(!isOpen)}
