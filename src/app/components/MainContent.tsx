@@ -34,8 +34,13 @@ export default function MainContent() {
         <main className="flex-1 px-8 py-6">
             <div className="flex">
                 <div className="flex-1 min-w-0">
-                <h1>Write API Document</h1>
-                <p>Create and manage your API documentation</p>
+                <h1>Write API Documentation</h1>
+                
+                <p className="text-sm text-gray-300">Create and manage your API documentation to guide developers in using the inventory and sales metrics features effectively
+                 
+                </p>
+                 
+                 
 
                 <section className="mt-6">
                     <div className="flex items-center gap-4">
@@ -46,11 +51,8 @@ export default function MainContent() {
                             <span className="text-sm">Designer</span>
                         </div>
 
-                        <button
-                         onClick={()=>setShowCalender(!showCalender)}
-                         className="rounded-full bg-red-50 px-2 py-1 text-xs text-red-500">
-                            <CalendarPicker />
-                        </button>
+                            <CalendarPicker className="bg-red-200 rounded-full"/>
+                        
                     </div>
 
                     <div className="mt-4 flex items-center gap-4">

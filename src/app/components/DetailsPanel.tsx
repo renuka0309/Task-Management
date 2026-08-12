@@ -3,12 +3,13 @@ import CalendarPicker from "./CalendarPicker";
 import { useState } from "react";
 import { Settings, ChevronDown, ChevronUp } from "lucide-react";
 import PriorityDropdown from "./PriorityDropdown";
+import StatusDropdown from "./StatusDropdown";
 export default function DetailsPanel() {
     const [isOpen, setIsOpen] = useState(true)
 
     return (
 
-        <aside className="w-[260px] border rounded-lg px-5 py-6 ml-5 mb-20 h-fit">
+        <aside className="w-[260px] border rounded-lg px-5 py-6 ml-5 mb-20 mt-22 h-fit">
             <div className="flex items-center justify-between">
                 <button
                     onClick={() => setIsOpen(!isOpen)}
@@ -34,7 +35,7 @@ export default function DetailsPanel() {
 
                     <div className="flex items-center gap-15">
                         <p className="text-xs text-gray-400">Status</p>
-                        <p className="mt-1 text-sm">In Progress</p>
+                        <StatusDropdown />
                     </div>
 
                     <div className="flex items-center gap-15">
@@ -44,12 +45,12 @@ export default function DetailsPanel() {
 
                     <div className="flex items-center gap-12">
                         <p className="text-xs text-gray-400">Members</p>
-                        <p className="mt-1 text-sm">CN</p>
+                        <p className="text-sm">CN</p>
                     </div>
 
                     <div className="flex items-center gap-5">
                         <p className="text-xs text-gray-400">Dates</p>
-                        <div className="mt-2 flex items-center gap-4">
+                        <div className="flex items-center gap-4">
                             <div>
                                 <CalendarPicker className="rounded-full bg-gray-100 text-gray-500" />
                             </div>
@@ -62,17 +63,17 @@ export default function DetailsPanel() {
 
                     <div className="flex items-center gap-14">
                         <p className="text-xs text-gray-400">Labels</p>
-                        <p className="mt-1 text-sm">Research</p>
+                        <p className="text-sm">Research</p>
                     </div>
 
                     <div className="flex items-center gap-15">
                         <p className="text-xs text-gray-400">Team</p>
-                        <p className="mt-1 text-sm">Development</p>
+                        <p className="text-sm">Development</p>
                     </div>
 
                     <div className="flex items-center gap-12">
                         <p className="text-xs text-gray-400">Reports</p>
-                        <p className="mt-1 text-sm">No reports</p>
+                        <p className="text-sm">No reports</p>
                     </div>
                 </div>
             )}
