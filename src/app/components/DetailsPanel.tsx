@@ -1,9 +1,14 @@
 "use client";
 import CalendarPicker from "./CalendarPicker";
 import { useState } from "react";
-import { Settings, ChevronDown, ChevronUp } from "lucide-react";
+import { Settings, ChevronDown, ChevronUp,ArrowRight } from "lucide-react";
 import PriorityDropdown from "./PriorityDropdown";
 import StatusDropdown from "./StatusDropdown";
+import MembersDropdown from "./MembersDropdown";
+import LabelsDropdown from "./LabelsDropdown";
+import Image from "next/image";
+
+
 export default function DetailsPanel() {
     const [isOpen, setIsOpen] = useState(true)
 
@@ -45,7 +50,7 @@ export default function DetailsPanel() {
 
                     <div className="flex items-center gap-12">
                         <p className="text-xs text-gray-400">Members</p>
-                        <p className="text-sm">CN</p>
+                        <MembersDropdown />
                     </div>
 
                     <div className="flex items-center gap-5">
@@ -63,17 +68,27 @@ export default function DetailsPanel() {
 
                     <div className="flex items-center gap-14">
                         <p className="text-xs text-gray-400">Labels</p>
-                        <p className="text-sm">Research</p>
+                        <LabelsDropdown />
                     </div>
 
                     <div className="flex items-center gap-15">
                         <p className="text-xs text-gray-400">Team</p>
-                        <p className="text-sm">Development</p>
+                        <LabelsDropdown />
                     </div>
 
                     <div className="flex items-center gap-12">
                         <p className="text-xs text-gray-400">Reports</p>
-                        <p className="text-sm">No reports</p>
+                        <div className="flex items-center gap-2">
+                           <Image src="/icons/avatar.jpg"
+                            width={24}
+                            height={24}
+                            alt="You"
+                           className="h-6 w-6 rounded-full"
+                           />
+
+                           <span className="text-sm">You</span>
+                           <ArrowRight size={14}/>
+                        </div>
                     </div>
                 </div>
             )}
