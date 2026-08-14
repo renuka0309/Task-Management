@@ -1,12 +1,18 @@
 import { CircleUserRound,ChevronsUpDown,LayoutDashboard,GalleryVerticalEnd } from "lucide-react";
-
+import Image from "next/image";
 export default function Sidebar(){
     return (
         <aside className="w-[240px] min-h-screen border-r bg-gray-50">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
              <span className="text-sm">
-                <CircleUserRound size={18} />
+                <Image
+                                src="/icons/avatar.jpg"
+                                alt="Avatar"
+                                width={20}
+                                height={20}
+                                className="w-5 h-5 rounded-full object-cover"
+                              />
             </span>
             <span className="text-sm font-medium">Dexter</span>
             </div>

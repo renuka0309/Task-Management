@@ -1,9 +1,10 @@
 "use client"
 import { useState } from "react";
-import { Tag } from "lucide-react";
+import { Tag, Lock, Eye, Share2, Ellipsis, PanelLeft } from "lucide-react";
 import DetailsPanel from "./DetailsPanel";
 import CalendarPicker from "./CalendarPicker";
 import Updates from "./Updates";
+import Comments from "./Comments";
 
 export default function MainContent() {
 
@@ -34,8 +35,10 @@ export default function MainContent() {
         <main className="flex-1 px-8 py-6">
             <div className="flex">
                 <div className="flex-1 min-w-0">
-                    <h1>Write API Documentation</h1>
+                    <div className="flex gap-2 ">
+                        <h1>Write API Documentation</h1>
 
+                    </div>
                     <p className="text-sm text-gray-300">Create and manage your API documentation to guide developers in using the inventory and sales metrics features effectively
 
                     </p>
@@ -59,13 +62,11 @@ export default function MainContent() {
                             <span className="w-16 text-sm text-gray-500">Labels</span>
 
                             <div className="flex gap-2">
-                                <span>
-                                    Research
-                                </span>
-                                <span>Design</span>
-                                <span>Development</span>
-                                <span>Testing</span>
-                                <span>Deployment</span>
+                                <Tag size={14} className="mt-[5px]" /><span> Research</span>
+                                <Tag size={14} className="mt-[5px]" /><span>Design</span>
+                                <Tag size={14} className="mt-[5px]" /><span>Development</span>
+                                <Tag size={14} className="mt-[5px]" /><span>Testing</span>
+                                <Tag size={14} className="mt-[5px]" /><span>Deployment</span>
                             </div>
                         </div>
 
@@ -126,9 +127,34 @@ export default function MainContent() {
 
                         </div>
                     </section>
+                    <Comments />
                 </div>
 
+
+
                 <div className="ml-5 flex w-[323px] flex-col">
+                    <div className="flex items-center gap-2 mt-1 ml-auto">
+                        <div className="flex items-center justify-center h-5 w-8 border border-[#E5E5E5] rounded-md">
+                            <Lock size={14} />
+                        </div>
+
+                        <div className="flex items-center gap-1 h-5 px-2 border border-[#E5E5E5] rounded-md w-fit">
+                            <Eye size={14} />
+                            <span className="text-xs text-[#737373]">1</span>
+                        </div>
+
+                        <div className="flex items-center justify-center h-5 w-8 border border-[#E5E5E5] rounded-md">
+                            <Share2 size={14} />
+                        </div>
+
+                        <div className="flex items-center justify-center h-5 w-8 border border-[#E5E5E5] rounded-md">
+                            <Ellipsis size={14} />
+                        </div>
+
+                        <div className="flex items-center justify-center h-5 w-8 border border-[#E5E5E5] rounded-md">
+                            <PanelLeft size={14} />
+                        </div>
+                    </div>
                     <DetailsPanel />
                     <Updates />
                 </div>
