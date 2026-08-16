@@ -13,7 +13,7 @@ export default function Home(){
       </div>
 
       <div className="w-[320px] mt-5 border border-gray-300 rounded-[25px] px-4 py-2">
-        <p className="text-lg font-semibold">Let's get back on track</p>
+        <p className="text-lg font-semibold">Lets get back on track</p>
         <p className="text-gray-500 text-xs flex justify-center mt-1">Enter your email below to login to your account</p>
         <button onClick={()=>router.push("/api-documentation")} className="w-full h-9 rounded-full bg-black text-white mt-5 font-medium hover:bg-gray-800">
            Continue as Guest
