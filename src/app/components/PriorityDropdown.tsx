@@ -4,6 +4,7 @@ import { useState } from "react"
 
 export default function PriorityDropdown() {
     const [priority, setPriority] = useState("Urgent");
+    
     const [isOpen, setIsOpen] = useState(false);
 
     const priorities = ["No priority", "Urgent", "High","Medium", "Low"];
@@ -26,7 +27,7 @@ export default function PriorityDropdown() {
             </button>
 
             {isOpen && (
-                <div className="absolute left-0 top-full z-10 mt-2 w-[220px] rounded-lg bg-white p-2 shadow-sm">
+                <div className="absolute left-0 top-full z-50 mt-2 w-[220px] rounded-lg bg-white p-2 shadow-lg">
                     <p className="px-2 py-1 text-xs text-gray-400">
                         Priority
                     </p>
@@ -42,7 +43,7 @@ export default function PriorityDropdown() {
                         >
 
                             <div className="flex items-center gap-2">
-                                {item!=="No Priority" && (
+                                {item!=="No priority" && (
                                     <SignalMedium 
                                       size={16}
                                       className={priorityColors[item]}

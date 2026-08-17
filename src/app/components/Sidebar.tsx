@@ -1,4 +1,4 @@
-import { CircleUserRound,ChevronsUpDown,LayoutDashboard,GalleryVerticalEnd } from "lucide-react";
+import { ChevronsUpDown,LayoutDashboard,GalleryVerticalEnd } from "lucide-react";
 import Image from "next/image";
 export default function Sidebar(){
     return (
