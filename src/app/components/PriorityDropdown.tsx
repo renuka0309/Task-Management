@@ -2,7 +2,12 @@
 import { Check, SignalMedium } from "lucide-react";
 import { useState } from "react"
 
-export default function PriorityDropdown() {
+type PriorityDropDownProps = {
+    value: string;
+    onChange: (value: string) => void;
+};
+
+export default function PriorityDropdown({value, onChange}: PriorityDropDownProps) {
     const [priority, setPriority] = useState("Urgent");
     
     const [isOpen, setIsOpen] = useState(false);
@@ -21,9 +26,10 @@ export default function PriorityDropdown() {
 
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`mt-1 text-sm ${priorityColors[priority]}`}
+                className={`mt-1 text-sm ${priorityColors[value] ?? "text-[#737373]"}`}
             >
-                {priority}
+                {value || "No priority"}
+                {/* {priority} */}
             </button>
 
             {isOpen && (
@@ -36,7 +42,7 @@ export default function PriorityDropdown() {
                         <button
                             key={item}
                             onClick={() => {
-                                setPriority(item);
+                                onChange(item);
                                 setIsOpen(false);
                             }}
                             className="flex w-full items-center justify-between rounded-md px-2 py-2 text-sm hover:bg-gray-50"

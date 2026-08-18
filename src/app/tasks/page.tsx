@@ -7,18 +7,8 @@ import { useRouter } from "next/navigation";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import FilterIcon from "../components/FilterIcon";
-
-type Task = {
-  id: number;
-  title: string;
-  status: string;
-  labels: string[];
-  assignee: string;
-  date: string;
-  priority?: string;
-  reporter?: string;
-  teams?: string;
-};
+import { useTasks } from "@/contexts/TasksContext";
+import { Task } from "../types/Task";
 
 export default function TasksBoard() {
   const router = useRouter();
@@ -28,6 +18,8 @@ export default function TasksBoard() {
   const [filters, setFilters] = useState<Record<string, string[]>>({});
   const [isSearching, setIsSearching] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [openMenuTaskId, setOpenMenuTaskId] = useState<number | null>(null);
+  const [openColumnMenu, setOpenColumnMenu] = useState<string | null>(null);
   const [showFields, setShowFields] = useState(false);
   const [visibleFields, setVisibleFields] = useState({
     priority: true,
@@ -45,42 +37,7 @@ export default function TasksBoard() {
     }));
   }
   const [addingToColumn, setAddingToColumn] = useState<string | null>(null);
-  const [columns, setColumns] = useState<{ title: string; count: number; tasks: Task[] }[]>([
-    {
-      title: "To Do",
-      count: 3,
-      tasks: [
-        { id: 1, title: "Write API Documentation", status: "ToDo", labels: ["Deployment", "Deployment"], assignee: "Admin", date: "29 Jul" },
-        { id: 2, title: "Implement Search Function", status: "ToDo", labels: ["Deployment", "Deployment"], assignee: "Admin", date: "29 Jul" },
-        { id: 3, title: "Deploy to Production", status: "ToDO", labels: ["Deployment", "Deployment"], assignee: "Admin", date: "29 Jul" },
-      ],
-    },
-    {
-      title: "Doing",
-      count: 2,
-      tasks: [
-        { id: 4, title: "Code Review Completed", status: "Doing", labels: ["Deployment", "Deployment"], assignee: "Admin", date: "29 Jul" },
-        { id: 5, title: "Design Mockups Finalized", status: "Doing", labels: ["Deployment", "Deployment"], assignee: "Admin", date: "29 Jul" },
-      ],
-    },
-    {
-      title: "Completed",
-      count: 4,
-      tasks: [
-        { id: 6, title: "Feature Testing Passed", status: "Completed", labels: ["Testing", "Passed"], assignee: "QA Team", date: "30 Jul" },
-        { id: 7, title: "UI Design Updated", status: "Completed", labels: ["Design", "Updated"], assignee: "Designer", date: "31 Jul" },
-        { id: 8, title: "Security Audit Scheduled", status: "Completed", labels: ["Audit", "Scheduled"], assignee: "Security", date: "01 Aug" },
-      ],
-    },
-    {
-      title: "On Hold",
-      count: 5,
-      tasks: [
-        { id: 9, title: "UI Review", labels: [], assignee: "Designer", status: "On Hold", date: "" },
-        { id: 10, title: "Backend Refactor", labels: [], assignee: "Dev Team", status: "On Hold", date: "" },
-      ],
-    },
-  ]);
+ const {columns, setColumns} = useTasks();
 
   const handleAddTask = (columnTitle: string) => {
     if (!newTaskTitle.trim()) return;
@@ -94,7 +51,6 @@ export default function TasksBoard() {
       assignee: "Admin",
       date: "",
     };
-
 
     setColumns((prevColumns) =>
       prevColumns.map((column) =>
@@ -111,21 +67,59 @@ export default function TasksBoard() {
     setAddingToColumn(null);
   }
 
-  // Add this function inside TasksBoard, before your return statement
-const filterTask = (task: Task) => {
-  const matchesSearch = task.title.toLowerCase().includes(searchText.toLowerCase());
-  const matchesFilters = Object.entries(filters).every(([field, values]) => {
-    if (!values || values.length === 0) return true;
-    const key = field.toLowerCase().replace(" ", "");
-    if (key === "priority") return values.includes(task.priority ?? "");
-    if (key === "labels") return task.labels.some((l) => values.includes(l));
-    if (key === "members") return values.includes(task.assignee);
-    if (key === "status") return values.includes(task.status);
-    return true;
-  });
-  return matchesSearch && matchesFilters;
-};
+  const handleDeleteTask = (columnTitle: string, taskId: number) => {
+    setColumns((prevColumns) =>
+      prevColumns.map((column) =>
+        column.title === columnTitle
+          ? {
+            ...column,
+            tasks: column.tasks.filter((task) => task.id !== taskId),
+            count: column.tasks.filter((task) => task.id !== taskId).length,
+          }
+          : column
+      )
+    );
+  }
 
+  const handleClearColumn = (columnTitle: string) => {
+    setColumns((prevColumns) =>
+      prevColumns.map((column) =>
+        column.title === columnTitle
+          ? { ...column, tasks: [], count: 0 }
+          : column
+      )
+    );
+    setOpenColumnMenu(null);
+  };
+  // Add this function inside TasksBoard, before your return statement
+  const filterTask = (task: Task) => {
+    const matchesSearch = task.title.toLowerCase().includes(searchText.toLowerCase());
+    const matchesFilters = Object.entries(filters).every(([field, values]) => {
+      if (!values || values.length === 0) return true;
+      const key = field.toLowerCase().replace(" ", "");
+      if (key === "priority") return values.includes(task.priority ?? "");
+      if (key === "labels") return task.labels.some((l) => values.includes(l));
+      if (key === "members") return values.includes(task.assignee);
+      if (key === "status") return values.includes(task.status);
+      return true;
+    });
+    return matchesSearch && matchesFilters;
+  };
+
+  const updateTaskPriority = (columnTitle: string, taskId: number, newPriority: string) => {
+  setColumns((prevColumns) =>
+    prevColumns.map((column) =>
+      column.title === columnTitle
+        ? {
+            ...column,
+            tasks: column.tasks.map((task) =>
+              task.id === taskId ? { ...task, priority: newPriority } : task
+            ),
+          }
+        : column
+    )
+  );
+};
   return (
     <div className="flex h-screen w-full bg-white">
       {/* Sidebar */}
@@ -301,8 +295,25 @@ const filterTask = (task: Task) => {
                     <span className="text-xs text-[#737373]">{col.count}</span>
                   </div>
                   <div className="flex items-center gap-2 text-[#737373]">
-                    <Plus size={14} />
-                    <MoreHorizontal size={14} />
+                    <Plus size={14}
+                      onClick={() => setAddingToColumn(col.title)}
+                      className="cursor-pointer"
+                    />
+                    <MoreHorizontal size={14}
+                      className="cursor-pointer"
+                      onClick={() => setOpenColumnMenu(openColumnMenu === col.title ? null : col.title)}
+                    />
+
+                    {openColumnMenu === col.title && (
+                      <div className="absolute right-0 top-5 w-40 rounded-md border border-[#E5E5E5] bg-white shadow-lg z-10">
+                        <button
+                          onClick={() => handleClearColumn(col.title)}
+                          className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50"
+                        >
+                          Clear all tasks
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -318,7 +329,32 @@ const filterTask = (task: Task) => {
                         className="border border-[#E5E5E5] rounded-md p-3 flex flex-col gap-2 bg-white">
                         <div className="flex items-start justify-between">
                           <span className="text-sm text-[#171717]">{task.title}</span>
-                          <MoreHorizontal size={14} className="text-[#737373] shrink-0" />
+                          <MoreHorizontal
+                            size={14}
+                            className="text-[#737373] shrink-0 cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setOpenMenuTaskId(openMenuTaskId === task.id ? null : task.id);
+                            }}
+                          />
+
+                          {openMenuTaskId === task.id && (
+                            <div
+                              onClick={(e) => e.stopPropagation()}
+                              className="absolute right-0 top-5 w-32 rounded-md border border-[#E5E5E5] bg-white shadow-lg z-10"
+                            >
+                              <button
+                                onClick={() => {
+                                  handleDeleteTask(col.title, task.id);
+                                  setOpenMenuTaskId(null);
+                                }}
+                                className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          )}
+
                         </div>
 
                         <div className="flex items-center justify-between">
@@ -394,6 +430,10 @@ const filterTask = (task: Task) => {
               newTaskTitle={newTaskTitle}
               setNewTaskTitle={setNewTaskTitle}
               handleAddTask={handleAddTask}
+              handleDeleteTask={handleDeleteTask}
+              openMenuTaskId={openMenuTaskId}
+              setOpenMenuTaskId={setOpenMenuTaskId}
+              updateTaskPriority={updateTaskPriority}
             />
           </div>
         )

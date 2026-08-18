@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ChevronDown, Plus, MoreHorizontal } from "lucide-react";
 import { Task } from "../types/Task";
 import CalendarPicker from "../components/CalendarPicker";
+import PriorityDropdown from "../components/PriorityDropdown";
 
 const PRIORITY_COLORS: Record<string, string> = {
   "No priority": "text-black",
@@ -19,6 +20,10 @@ type TaskListViewProps = {
   newTaskTitle: string;
   setNewTaskTitle: (title: string) => void;
   handleAddTask: (columnTitle: string) => void;
+  handleDeleteTask: (columnTitle: string, taskId: number) => void;
+  openMenuTaskId: number | null;
+  setOpenMenuTaskId: (id: number | null) => void;
+  updateTaskPriority: (columnTitle: string, taskId: number, newPriority: string) => void;
 };
 
 export default function TaskListView({
@@ -28,6 +33,10 @@ export default function TaskListView({
   newTaskTitle,
   setNewTaskTitle,
   handleAddTask,
+  handleDeleteTask,
+  openMenuTaskId,
+  setOpenMenuTaskId,
+  updateTaskPriority,
 }: TaskListViewProps) {
   const grouped = {
     "To Do": tasks.filter((t) => t.status === "To Do"),
@@ -39,7 +48,7 @@ export default function TaskListView({
   return (
     <div className="flex flex-col gap-6">
       {Object.entries(grouped).map(([status, group]) => (
-        <div key={status} className="border border-[#E5E5E5] rounded-md overflow-hidden">
+        <div key={status} className="border border-[#E5E5E5] rounded-md">
           <div className="flex items-center gap-1.5 px-4 py-2.5 bg-[#FAFAFA] text-sm text-[#171717]">
             <ChevronDown size={14} className="text-[#737373]" />
             <span>{status}</span>
@@ -68,8 +77,17 @@ export default function TaskListView({
                         {task.title}
                       </Link>
                     </td>
-                    <td className={PRIORITY_COLORS[task.priority ?? ""] ?? "text-[#737373]"}>
-                      {task.priority ?? "—"}
+                      
+                    <td>
+                      <PriorityDropdown
+                        value={task.priority ?? "No priority"}
+                        onChange={(newPriority) =>{
+                          console.log("Clicked:", newPriority, "for task:", task.id, "status:", status);
+                            updateTaskPriority(status, task.id, newPriority)
+                        }
+                           
+                          }
+                      />
                     </td>
                     <td>
                       <Image src="/icons/avatar.jpg" alt="" width={20} height={20} className="rounded-full object-cover" />
@@ -77,13 +95,35 @@ export default function TaskListView({
                     <td className="text-[#171717]">{task.date && (
                       <span className="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded w-fit">
                         <CalendarPicker
-                         
+
                         />
-                        
+
                       </span>
                     )}</td>
                     <td className="pr-4 text-[#737373]">
-                      <MoreHorizontal size={14} />
+                      <MoreHorizontal size={14}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenMenuTaskId(openMenuTaskId === task.id ? null : task.id);
+                        }}
+                      />
+
+                      {openMenuTaskId === task.id && (
+                        <div
+                          onClick={(e) => e.stopPropagation()}
+                          className="absolute right-4 top-6 w-32 rounded-md border border-[#E5E5E5] bg-white shadow-lg z-10"
+                        >
+                          <button
+                            onClick={() => {
+                              handleDeleteTask(status, task.id);
+                              setOpenMenuTaskId(null);
+                            }}
+                            className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}

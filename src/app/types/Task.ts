@@ -9,4 +9,14 @@ export type Task = {
   priority?: string;
   reporter?: string;
   teams?: string;
+  description?: string;
+  subtasks?: Subtask[];
+};
+
+export type Subtask = {
+  id: number;
+  task: string;
+  priority: string;
+  member: string;
+  dueDate: string;
 };

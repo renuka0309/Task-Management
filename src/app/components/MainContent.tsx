@@ -1,49 +1,60 @@
 "use client"
 import { useState } from "react";
-import { Tag, Lock, Eye, Share2, Ellipsis, PanelLeft } from "lucide-react";
+import { Tag, MoreHorizontal, Lock, Eye, Share2, Ellipsis, PanelLeft } from "lucide-react";
 import DetailsPanel from "./DetailsPanel";
 import CalendarPicker from "./CalendarPicker";
 import Updates from "./Updates";
 import Comments from "./Comments";
+import { Task, Subtask } from "../types/Task";
+import PriorityDropdown from "./PriorityDropdown";
 
-export default function MainContent() {
 
-    const subtasks = [
-        {
-            task: "Subtask 1",
-            priority: "High",
+export default function MainContent({
+    task,
+    updateTask,
+}: {
+    task: Task;
+    updateTask: (updates: Partial<Task>) => void;
+}) {
+
+    const subtasks = task.subtasks ?? [];
+    const [isAddingSubtask, setIsAddingSubtask] = useState(false);
+    const [newSubtaskTitle, setNewSubtaskTitle] = useState("");
+    const [openSubtaskMenuId, setOpenSubtaskMenuId] = useState<number | null>(null);
+
+    const handleAddSubtask = () => {
+        if (!newSubtaskTitle.trim()) return;
+
+        const newSubtask: Subtask = {
+            id: Math.max(0, ...subtasks.map((s) => s.id)) + 1,
+            task: newSubtaskTitle,
+            priority: "No priority",
             member: "",
-            dueDate: "12 Sep 2026"
-        },
-        {
-            task: "Subtask 2",
-            priority: "Low",
-            member: "CN",
-            dueDate: "15 Sep 2026",
-        },
-        {
-            task: "Subtask 3",
-            priority: "Medium",
-            member: "+",
-            dueDate: "18 Sep 2026",
-        },
-    ]
+            dueDate: "",
+        };
 
+        updateTask({ subtasks: [...subtasks, newSubtask] });
+        setNewSubtaskTitle("");
+        setIsAddingSubtask(false);
+    };
 
-
+    const handleDeleteSubtask = (subtaskId: number) => {
+        const updated = subtasks.filter((s) => s.id !== subtaskId);
+        updateTask({ subtasks: updated });
+        setOpenSubtaskMenuId(null);
+    };
     return (
         <main className="flex-1 px-8 py-6">
             <div className="flex">
                 <div className="flex-1 min-w-0">
                     <div className="flex gap-2 ">
-                        <h1>Write API Documentation</h1>
+                        <h1>{task.title}</h1>
 
                     </div>
-                    <p className="text-sm text-gray-300">Create and manage your API documentation to guide developers in using the inventory and sales metrics features effectively
+                    <p className="text-sm text-gray-300">
+                        {task.description}
 
                     </p>
-
-
 
                     <section className="mt-6">
                         <div className="flex items-center gap-4">
@@ -51,22 +62,26 @@ export default function MainContent() {
 
                             <div className="flex items-center gap-2">
                                 <span>ⓐ</span>
-                                <span className="text-sm">Designer</span>
+                                <span className="text-sm">{task.assignee}</span>
                             </div>
 
-                            <CalendarPicker className="bg-red-200 rounded-full" />
+                            <CalendarPicker
+                                className="bg-red-200 rounded-full"
+                            />
 
                         </div>
 
                         <div className="mt-4 flex items-center gap-4">
-                            <span className="w-16 text-sm text-gray-500">Labels</span>
+                            <span className="w-16 text-sm text-gray-500">
+                                Labels
+                            </span>
 
                             <div className="flex gap-2">
-                                <Tag size={14} className="mt-[5px]" /><span> Research</span>
-                                <Tag size={14} className="mt-[5px]" /><span>Design</span>
-                                <Tag size={14} className="mt-[5px]" /><span>Development</span>
-                                <Tag size={14} className="mt-[5px]" /><span>Testing</span>
-                                <Tag size={14} className="mt-[5px]" /><span>Deployment</span>
+                                {task.labels.map((label, index) => (
+                                    <span key={index} className="flex items-center gap-1">
+                                        <Tag size={14} className="mt-[5px]" /> {label}
+                                    </span>
+                                ))}
                             </div>
                         </div>
 
@@ -85,7 +100,7 @@ export default function MainContent() {
                             <h2 className="text-sm font-medium">Subtasks</h2>
                         </div>
 
-                        <div className="border rounded-lg overflow-hidden">
+                        <div className="border rounded-lg">
 
                             <div className="grid grid-cols-5 border-b px-4 py-2 text-xs font-semibold text-black-600">
                                 <span>Task</span>
@@ -101,28 +116,89 @@ export default function MainContent() {
                                     className="grid grid-cols-5 border-b px-4 py-3 text-sm"
                                 >
                                     <span>{subtask.task}</span>
-                                    <span className={`w-fit rounded-full px-2 py-1 text-xs ${subtask.priority === "High"
-                                        ? "bg-red-50 text-red-500"
-                                        : subtask.priority === "Medium"
-                                            ? "bg-yellow-50 text-yellow-600"
-                                            : "bg-green-50 text-gray-600"
-                                        }`}>
-                                        {subtask.priority}
-                                    </span>
+                                    <PriorityDropdown
+                                        value={subtask.priority}
+                                        onChange={(newPriority) => {
+                                            const updated = subtasks.map((s) =>
+                                                s.id === subtask.id ? { ...s, priority: newPriority } : s
+                                            );
+                                            updateTask({ subtasks: updated });
+                                        }}
+                                    />
 
                                     <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-xs">
                                         {subtask.member}
                                     </span>
 
                                     <span className="text-sm text-gray-600">
-                                        {subtask.dueDate}
+                                        <CalendarPicker
+                                            onDateSelect={(newDate: string) => {
+                                                const updated = subtasks.map((s) =>
+                                                    s.id === subtask.id ? { ...s, dueDate: newDate } : s
+                                                );
+                                                updateTask({ subtasks: updated });
+                                            }}
+                                        />
+                                        {/* {subtask.dueDate} */}
                                     </span>
-                                    <span className="text-right">...</span>
+
+                                    <span className="text-right relative">
+                                        <MoreHorizontal
+                                            size={14}
+                                            className="cursor-pointer inline-block"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setOpenSubtaskMenuId(openSubtaskMenuId === subtask.id ? null : subtask.id);
+                                            }}
+                                        />
+                                        {openSubtaskMenuId === subtask.id && (
+                                            <div
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="absolute right-0 top-5 w-32 rounded-md border border-[#E5E5E5] bg-white shadow-lg z-10"
+                                            >
+                                                <button
+                                                    onClick={() => handleDeleteSubtask(subtask.id)}
+                                                    className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        )}
+                                    </span>
+
                                 </div>
                             ))}
 
                             <div className="px-4 py-3 text-sm text-gray-500">
-                                + Add Subtasks
+                                {isAddingSubtask ? (
+                                    <div className="flex items-center gap-2 px-4 py-3">
+                                        <input
+                                            autoFocus
+                                            value={newSubtaskTitle}
+                                            onChange={(e) => setNewSubtaskTitle(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter") handleAddSubtask();
+                                                if (e.key === "Escape") {
+                                                    setNewSubtaskTitle("");
+                                                    setIsAddingSubtask(false);
+                                                }
+                                            }}
+                                            placeholder="Subtask name..."
+                                            className="flex-1 border border-[#E5E5E5] rounded-md px-2 py-1 text-sm outline-none"
+                                        />
+                                        <button onClick={handleAddSubtask} className="text-sm text-[#171717]">
+                                            Add
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsAddingSubtask(true)}
+                                        className="px-4 py-3 text-sm text-gray-500 text-left w-full"
+                                    >
+                                        + Add Subtasks
+                                    </button>
+                                )}
                             </div>
 
                         </div>
@@ -155,7 +231,7 @@ export default function MainContent() {
                             <PanelLeft size={14} />
                         </div>
                     </div>
-                    <DetailsPanel />
+                    <DetailsPanel task={task} updateTask={updateTask} />
                     <Updates />
                 </div>
 

@@ -1,15 +1,21 @@
 "use client";
 import CalendarPicker from "./CalendarPicker";
 import { useState } from "react";
-import { Settings, ChevronDown, ChevronUp,ArrowRight } from "lucide-react";
+import { Settings, ChevronDown, ChevronUp, ArrowRight } from "lucide-react";
 import PriorityDropdown from "./PriorityDropdown";
 import StatusDropdown from "./StatusDropdown";
 import MembersDropdown from "./MembersDropdown";
 import LabelsDropdown from "./LabelsDropdown";
 import Image from "next/image";
+import { Task } from "../types/Task";
 
-
-export default function DetailsPanel() {
+export default function DetailsPanel({
+    task,
+    updateTask,
+}: {
+    task: Task;
+    updateTask: (updates: Partial<Task>) => void;
+}) {
     const [isOpen, setIsOpen] = useState(true)
 
     return (
@@ -45,7 +51,11 @@ export default function DetailsPanel() {
 
                     <div className="flex items-center gap-15">
                         <p className="text-xs text-gray-400">Priority</p>
-                        <PriorityDropdown />
+                        <PriorityDropdown
+                            value={task.priority ?? "No priority"}
+                            onChange={(newPriority) => updateTask({ priority: newPriority })}
+
+                        />
                     </div>
 
                     <div className="flex items-center gap-12">
@@ -79,15 +89,15 @@ export default function DetailsPanel() {
                     <div className="flex items-center gap-12">
                         <p className="text-xs text-gray-400">Reports</p>
                         <div className="flex items-center gap-2">
-                           <Image src="/icons/avatar.jpg"
-                            width={24}
-                            height={24}
-                            alt="You"
-                           className="h-6 w-6 rounded-full"
-                           />
+                            <Image src="/icons/avatar.jpg"
+                                width={24}
+                                height={24}
+                                alt="You"
+                                className="h-6 w-6 rounded-full"
+                            />
 
-                           <span className="text-sm">You</span>
-                           <ArrowRight size={14}/>
+                            <span className="text-sm">You</span>
+                            <ArrowRight size={14} />
                         </div>
                     </div>
                 </div>
