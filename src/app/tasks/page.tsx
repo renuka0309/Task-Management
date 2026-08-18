@@ -2,23 +2,22 @@
 import { useState } from "react";
 import TaskListView from "./TaskListView";
 import Image from "next/image";
-import { Menu, Grid2X2, Search, Tag, Calendar, SlidersHorizontal, Filter, Plus, PanelLeft, MoreHorizontal } from "lucide-react";
+import { Tag, Calendar, Plus, MoreHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
-import FilterIcon from "../components/FilterIcon";
+
 import { useTasks } from "@/contexts/TasksContext";
 import { Task } from "../types/Task";
+import TaskToolbar from "../components/TaskToolbarProps";
 
 export default function TasksBoard() {
   const router = useRouter();
   const [viewMode, setViewMode] = useState<"board" | "list">("board");
-  const [newTaskTitle, setNewTaskTitle] = useState("");
   const [isAddingTask, setAddingTask] = useState(false);
   const [filters, setFilters] = useState<Record<string, string[]>>({});
   const [isSearching, setIsSearching] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [openMenuTaskId, setOpenMenuTaskId] = useState<number | null>(null);
   const [openColumnMenu, setOpenColumnMenu] = useState<string | null>(null);
   const [showFields, setShowFields] = useState(false);
   const [visibleFields, setVisibleFields] = useState({
@@ -36,50 +35,15 @@ export default function TasksBoard() {
       [field]: !prev[field],
     }));
   }
-  const [addingToColumn, setAddingToColumn] = useState<string | null>(null);
- const {columns, setColumns} = useTasks();
 
-  const handleAddTask = (columnTitle: string) => {
-    if (!newTaskTitle.trim()) return;
-    const newTask = {
-      id: Math.max(
-        ...columns.flatMap((column) => column.tasks.map((task) => task.id))
-      ) + 1,
-      title: newTaskTitle,
-      status: columnTitle,
-      labels: ["Deployment"],
-      assignee: "Admin",
-      date: "",
-    };
-
-    setColumns((prevColumns) =>
-      prevColumns.map((column) =>
-        column.title === columnTitle
-          ? {
-            ...column,
-            tasks: [...column.tasks, newTask],
-            count: column.tasks.length + 1,
-          }
-          : column
-      )
-    );
-    setNewTaskTitle("");
-    setAddingToColumn(null);
-  }
-
-  const handleDeleteTask = (columnTitle: string, taskId: number) => {
-    setColumns((prevColumns) =>
-      prevColumns.map((column) =>
-        column.title === columnTitle
-          ? {
-            ...column,
-            tasks: column.tasks.filter((task) => task.id !== taskId),
-            count: column.tasks.filter((task) => task.id !== taskId).length,
-          }
-          : column
-      )
-    );
-  }
+  const {
+    columns, setColumns,
+    addingToColumn, setAddingToColumn,
+    newTaskTitle, setNewTaskTitle,
+    openMenuTaskId, setOpenMenuTaskId,
+    handleAddTask, handleDeleteTask,
+    updateTaskPriority,
+  } = useTasks();
 
   const handleClearColumn = (columnTitle: string) => {
     setColumns((prevColumns) =>
@@ -106,20 +70,7 @@ export default function TasksBoard() {
     return matchesSearch && matchesFilters;
   };
 
-  const updateTaskPriority = (columnTitle: string, taskId: number, newPriority: string) => {
-  setColumns((prevColumns) =>
-    prevColumns.map((column) =>
-      column.title === columnTitle
-        ? {
-            ...column,
-            tasks: column.tasks.map((task) =>
-              task.id === taskId ? { ...task, priority: newPriority } : task
-            ),
-          }
-        : column
-    )
-  );
-};
+
   return (
     <div className="flex h-screen w-full bg-white">
       {/* Sidebar */}
@@ -141,120 +92,19 @@ export default function TasksBoard() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setIsSearching(true)}
-              className="h-8 w-8 flex items-center justify-center border border-[#E5E5E5] rounded-md">
-              <Search size={14}
+            <TaskToolbar
+              isSearching={isSearching} setIsSearching={setIsSearching}
+              searchText={searchText} setSearchText={setSearchText}
+              showFields={showFields} setShowFields={setShowFields}
+              visibleFields={visibleFields} toggleFields={toggleFields}
+              viewMode={viewMode} setViewMode={setViewMode}
+              setFilters={setFilters}
+            />
 
-                className="text-[#737373]" />
-            </button>
-
-            {isSearching && (
-              <input
-                autoFocus
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                placeholder="Search tasks..."
-                className="h-8 w-48 rounded-md border border-[#E5E5E5] px-2 text-sm outline-none"
-              />
-            )}
-            <div className="flex items-center gap-2">
-
-              <div className="relative">
-                <button
-                  onClick={() => setShowFields((prev) => !prev)}
-                  className="h-8 px-3 flex items-center gap-1.5 border border-[#E5E5E5] rounded-md text-sm text-[#171717]">
-                  <SlidersHorizontal size={14} />
-                  Fields
-                </button>
-
-                {showFields && (
-                  <div className="absolute mt-2 w-56 rounded-md border border-[#E5E5E5] bg-white p-3 shadow-sm">
-                    <div className="flex items-center gap-1 border-b border-[#E5E5E5] p-2">
-                      <button
-                        onClick={() => setViewMode("list")}
-                        className="flex flex-1 items-center justify-center gap-2 rounded-md px-2 py-1.5 text-sm"
-                      >
-                        <Menu size={14} />
-                        List
-                      </button>
-
-                      <button
-                        onClick={() => setViewMode("board")}
-                        className="flex flex-1 items-center justify-center gap-2 rounded-md px-2 py-1.5 text-sm"
-                      >
-                        <Grid2X2 size={14} />
-                        Board
-                      </button>
-                    </div>
-
-                    <div className="flex flex-col justify-between gap-2 p-2">
-                      <label className="flex items-center justify-between px-2 py-1.5 text-sm">
-                        <span>Priority</span>
-                        <input
-                          type="checkbox"
-                          checked={visibleFields.priority}
-                          onChange={() => toggleFields("priority")}
-                        />
-                      </label>
-
-                      <label className="flex items-center justify-between px-2 py-1.5 text-sm">
-                        <span>Members</span>
-                        <input
-                          type="checkbox"
-                          checked={visibleFields.members}
-                          onChange={() => toggleFields("members")} />
-
-                      </label>
-
-
-                      <label className="flex items-center justify-between px-2 py-1.5 text-sm">
-                        <span>Due Date</span>
-                        <input type="checkbox"
-                          checked={visibleFields.dueDate}
-                          onChange={() => toggleFields("dueDate")}
-                        />
-
-                      </label>
-
-                      <label className="flex items-center justify-between px-2 py-1.5 text-sm">
-                        <span>Labels</span>
-                        <input type="checkbox"
-                          checked={visibleFields.labels}
-                          onChange={() => toggleFields("labels")}
-                        />
-
-                      </label>
-
-
-                      <label className="flex items-center justify-between px-2 py-1.5 text-sm">
-                        Status
-                        <input type="checkbox"
-                          checked={visibleFields.status}
-                          onChange={() => toggleFields("status")}
-                        />
-
-                      </label>
-
-                      <label className="flex items-center justify-between px-2 py-1.5 text-sm">
-                        <span>Reporter</span>
-                        <input type="checkbox"
-                          checked={visibleFields.reporter}
-                          onChange={() => toggleFields("reporter")}
-                        />
-
-                      </label>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <FilterIcon onChange={setFilters} />
-
-            </div>
             <button
               onClick={() => setAddingTask(true)}
-              className="h-8 px-3 flex items-center gap-1.5 bg-black text-white rounded-md text-sm">
+              className="h-8 px-3 flex items-center gap-1.5 bg-black text-white rounded-md text-sm"
+            >
               <Plus size={14} />
               Add Task
             </button>
@@ -282,7 +132,7 @@ export default function TasksBoard() {
             )}
           </div>
         </div>
-
+        
         {/* Board columns */}
         {viewMode === "board" ? (
           <div className="flex-1 flex gap-4 px-6 pb-6 overflow-x-auto">

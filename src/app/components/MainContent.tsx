@@ -139,7 +139,7 @@ export default function MainContent({
                                                 updateTask({ subtasks: updated });
                                             }}
                                         />
-                                        {/* {subtask.dueDate} */}
+
                                     </span>
 
                                     <span className="text-right relative">
@@ -232,7 +232,7 @@ export default function MainContent({
                         </div>
                     </div>
                     <DetailsPanel task={task} updateTask={updateTask} />
-                    <Updates />
+                    <Updates updates={task.updates ?? []}/>
                 </div>
 
             </div>

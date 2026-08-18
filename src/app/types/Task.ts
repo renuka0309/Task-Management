@@ -11,6 +11,8 @@ export type Task = {
   teams?: string;
   description?: string;
   subtasks?: Subtask[];
+  updates? : Update[];
+  projectId?: number;
 };
 
 export type Subtask = {
@@ -20,3 +22,23 @@ export type Subtask = {
   member: string;
   dueDate: string;
 };
+
+export type Update={
+  id: number;
+  text: string;
+  timestamp: string;
+}
+
+export type Column={
+  title: string;
+  count: number;
+  tasks: Task[];
+}
+
+export type Project={
+  id: number;
+  title: string;
+  priority: string;
+  lead: string;
+  dueDate: string;
+}

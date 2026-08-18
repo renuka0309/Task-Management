@@ -29,7 +29,7 @@ export default function PriorityDropdown({value, onChange}: PriorityDropDownProp
                 className={`mt-1 text-sm ${priorityColors[value] ?? "text-[#737373]"}`}
             >
                 {value || "No priority"}
-                {/* {priority} */}
+               
             </button>
 
             {isOpen && (
@@ -59,7 +59,7 @@ export default function PriorityDropdown({value, onChange}: PriorityDropDownProp
                                 {item}
                             </span>
                             </div>
-                            {priority === item && <span> <Check size={16} /> </span>}
+                            {value === item && <span> <Check size={16} /> </span>}
 
                         </button>
                     ))}
