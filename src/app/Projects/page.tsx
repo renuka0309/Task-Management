@@ -91,6 +91,7 @@ export default function ProjectsPage() {
                 setFilters={setFilters}
               />
               <button
+                style={{ backgroundColor: "var(--accent-color)" }}
                 onClick={() => setIsAddingProject(true)}
                 className="h-8 px-3 flex items-center gap-1.5 bg-black text-white rounded-md text-sm"
               >

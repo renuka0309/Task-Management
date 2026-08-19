@@ -6,7 +6,6 @@ import { Tag, Calendar, Plus, MoreHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
-
 import { useTasks } from "@/contexts/TasksContext";
 import { Task } from "../types/Task";
 import TaskToolbar from "../components/TaskToolbarProps";
@@ -103,10 +102,11 @@ export default function TasksBoard() {
 
             <button
               onClick={() => setAddingTask(true)}
+              style={{ backgroundColor: "var(--accent-color)" }}
               className="h-8 px-3 flex items-center gap-1.5 bg-black text-white rounded-md text-sm"
             >
               <Plus size={14} />
-              Add Task
+              Add Task  
             </button>
 
             {isAddingTask && (
