@@ -223,7 +223,7 @@ export default function MainContent({
 
                         </div>
                     </section>
-                    <Comments />
+                    <Comments taskId={task.id}/>
                 </div>
 
 
