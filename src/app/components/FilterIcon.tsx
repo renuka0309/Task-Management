@@ -122,9 +122,10 @@ export default function FilterIcon({ onChange }: { onChange?: (filters: Record<s
 
                     {config.type === "date" && (
                       <div className="p-2 text-sm text-[#737373]">
-                        <CalendarPicker 
-                          onDateSelect={(date)=>toggleValue("Due Date", date)}
-                        />
+                        <CalendarPicker
+  value={filters["Due Date"]?.[0]}
+  onDateSelect={(date) => toggleValue("Due Date", date)}
+/>
                       </div>
                     )}
                   </div>

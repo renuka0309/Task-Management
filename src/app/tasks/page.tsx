@@ -54,7 +54,7 @@ export default function TasksBoard() {
     );
     setOpenColumnMenu(null);
   };
-  // Add this function inside TasksBoard, before your return statement
+  
   const filterTask = (task: Task) => {
     const matchesSearch = task.title.toLowerCase().includes(searchText.toLowerCase());
     const matchesFilters = Object.entries(filters).every(([field, values]) => {
@@ -72,15 +72,11 @@ export default function TasksBoard() {
 
   return (
     <div className="flex h-screen w-full bg-white">
-      {/* Sidebar */}
       <Sidebar />
 
-      {/* Main content */}
       <main className="flex-1 flex flex-col">
-        {/* Top bar */}
+        
         <Topbar />
-
-        {/* Header row */}
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
             <h1 className="text-lg font-semibold text-[#171717]">Tasks</h1>
@@ -169,9 +165,7 @@ export default function TasksBoard() {
 
                 <div className="flex flex-col gap-2">
                   {col.tasks
-                    .filter((filterTask) =>
-                      filterTask.title.toLowerCase().includes(searchText.toLowerCase())
-                    )
+                    .filter(filterTask) 
                     .map((task) => (
                       <div
                         key={task.id}

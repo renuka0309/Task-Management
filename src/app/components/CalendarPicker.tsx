@@ -4,17 +4,20 @@ import { ArrowRight, ArrowLeft, Calendar } from "lucide-react";
 
 type CalendarPickerProps = {
     className?: string;
+    value?: string;
     onDateSelect?: (date: string) => void;
 };
 
 export default function CalendarPicker({
     className = "",
+    value,
     onDateSelect,
 }: CalendarPickerProps) {
     const [isOpen, setIsOpen] = useState(false);
+    const today=new Date()
     const [selectDate, setSelectDate] = useState(31);
-    const [currentMonth, setCurrentMonth] = useState(6);
-    const [currentYear, setCurrentYear] = useState(2026);
+    const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+    const [currentYear, setCurrentYear] = useState(today.getFullYear());
 
     const daysInMonth = new Date(
         currentYear,
@@ -30,15 +33,18 @@ export default function CalendarPicker({
         1
     ).getDay();
 
+    const selectedDay = value ? parseInt(value.split(" ")[0], 10) : null;
+    const selectedMonthName = value ? value.split(" ")[1] : null;
+    const currentMonthName = new Date(currentYear, currentMonth).toLocaleString("default", { month: "short" });
+    const isViewingSelectedMonth = selectedMonthName === currentMonthName;
+
+
     return (
         <div className="relative">
             <button onClick={() => setIsOpen(!isOpen)}
                 className={`flex items-center px-2 py-1 text-xs ${className}`}
             >
-                <Calendar size={16} /> {selectDate} {" "}
-                {new Date(currentYear, currentMonth).toLocaleString("default", {
-                    month: "short",
-                })}
+                <Calendar size={16} /> {value || "No date"}
             </button>
 
             {isOpen && (
@@ -53,7 +59,6 @@ export default function CalendarPicker({
                                 } else {
                                     setCurrentMonth(currentMonth - 1);
                                 }
-                                setSelectDate(1);
                             }}
                             className="text-gray-500"
                         >
@@ -61,9 +66,7 @@ export default function CalendarPicker({
                         </button>
 
                         <h3 className="text-sm font-semibold">
-                            {new Date(currentYear, currentMonth).toLocaleString("default", {
-                                month: "long",
-                            })}{" "}
+                            {new Date(currentYear, currentMonth).toLocaleString("default", { month: "long" })}{" "}
                             {currentYear}
                         </h3>
 
@@ -75,7 +78,7 @@ export default function CalendarPicker({
                                 } else {
                                     setCurrentMonth(currentMonth + 1);
                                 }
-                                setSelectDate(1);
+                                
                             }}
                             className="text-gray-500"
                         >
@@ -104,16 +107,12 @@ export default function CalendarPicker({
                             <button
                                 key={day}
                                 onClick={() => {
-                                    setSelectDate(day);
-                                    onDateSelect?.(
-                                        `${day} ${new Date(currentYear, currentMonth).toLocaleString("default", {
-                                            month: "short",
-                                        })}`
-                                    );
+                                    const newDate = `${day} ${currentMonthName}`;
+                                    onDateSelect?.(newDate);
                                     setIsOpen(false);
                                 }}
                                 className={
-                                    selectDate === day
+                                    isViewingSelectedMonth && selectedDay === day
                                         ? "rounded-full bg-black text-white"
                                         : ""
                                 }

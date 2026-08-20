@@ -1,4 +1,5 @@
 "use client"
+const API_URL = "http://localhost:3001";
 import { useState } from "react";
 import { Tag, MoreHorizontal, Lock, Eye, Share2, Ellipsis, PanelLeft } from "lucide-react";
 import DetailsPanel from "./DetailsPanel";
@@ -12,9 +13,11 @@ import PriorityDropdown from "./PriorityDropdown";
 export default function MainContent({
     task,
     updateTask,
+    refetchTask,
 }: {
     task: Task;
     updateTask: (updates: Partial<Task>) => void;
+    refetchTask: () => void;
 }) {
 
     const subtasks = task.subtasks ?? [];
@@ -22,26 +25,50 @@ export default function MainContent({
     const [newSubtaskTitle, setNewSubtaskTitle] = useState("");
     const [openSubtaskMenuId, setOpenSubtaskMenuId] = useState<number | null>(null);
 
-    const handleAddSubtask = () => {
+    const handleAddSubtask = async () => {
         if (!newSubtaskTitle.trim()) return;
+        try {
+            const res = await fetch(`${API_URL}/tasks/${task.id}/subtasks`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ task: newSubtaskTitle }),
+            });
 
-        const newSubtask: Subtask = {
-            id: Math.max(0, ...subtasks.map((s) => s.id)) + 1,
-            task: newSubtaskTitle,
-            priority: "No priority",
-            member: "",
-            dueDate: "",
-        };
+            if (!res.ok) throw new Error("Failed to add subtask");
+            await refetchTask();
+            setNewSubtaskTitle("");
+            setIsAddingSubtask(false);
+        } catch (err) {
+            console.error("Error adding subtask:", err);
+        }
 
-        updateTask({ subtasks: [...subtasks, newSubtask] });
-        setNewSubtaskTitle("");
-        setIsAddingSubtask(false);
     };
 
-    const handleDeleteSubtask = (subtaskId: number) => {
-        const updated = subtasks.filter((s) => s.id !== subtaskId);
-        updateTask({ subtasks: updated });
-        setOpenSubtaskMenuId(null);
+    const handleDeleteSubtask = async (subtaskId: number) => {
+        try {
+            const res = await fetch(`${API_URL}/tasks/${task.id}/subtasks/${subtaskId}`, {
+                method: "DELETE",
+            });
+            if (!res.ok) throw new Error("Failed to delete subtask");
+            await refetchTask();
+            setOpenSubtaskMenuId(null);
+        } catch (err) {
+            console.error("Error deleting subtask:", err);
+        }
+    };
+
+    const updateSubtaskField = async (subtaskId: number, updates: any) => {
+        try {
+            const res = await fetch(`${API_URL}/tasks/${task.id}/subtasks/${subtaskId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updates),
+            });
+            if (!res.ok) throw new Error("Failed to update subtask");
+            await refetchTask();
+        } catch (err) {
+            console.error("Error updating subtask:", err);
+        }
     };
     return (
         <main className="flex-1 px-8 py-6">
@@ -66,6 +93,8 @@ export default function MainContent({
                             </div>
 
                             <CalendarPicker
+                                value={task.date}
+                                onDateSelect={(newDate: string) => updateTask({ date: newDate })}
                                 className="bg-red-200 rounded-full"
                             />
 
@@ -118,12 +147,7 @@ export default function MainContent({
                                     <span>{subtask.task}</span>
                                     <PriorityDropdown
                                         value={subtask.priority}
-                                        onChange={(newPriority) => {
-                                            const updated = subtasks.map((s) =>
-                                                s.id === subtask.id ? { ...s, priority: newPriority } : s
-                                            );
-                                            updateTask({ subtasks: updated });
-                                        }}
+                                        onChange={(newPriority) => updateSubtaskField(subtask.id, { priority: newPriority })}
                                     />
 
                                     <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-xs">
@@ -132,12 +156,8 @@ export default function MainContent({
 
                                     <span className="text-sm text-gray-600">
                                         <CalendarPicker
-                                            onDateSelect={(newDate: string) => {
-                                                const updated = subtasks.map((s) =>
-                                                    s.id === subtask.id ? { ...s, dueDate: newDate } : s
-                                                );
-                                                updateTask({ subtasks: updated });
-                                            }}
+                                            value={subtask.dueDate}
+                                            onDateSelect={(newDate: string) => updateSubtaskField(subtask.id, { dueDate: newDate })}
                                         />
 
                                     </span>
@@ -232,7 +252,7 @@ export default function MainContent({
                         </div>
                     </div>
                     <DetailsPanel task={task} updateTask={updateTask} />
-                    <Updates updates={task.updates ?? []}/>
+                    <Updates updates={task.updates ?? []} />
                 </div>
 
             </div>

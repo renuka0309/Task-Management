@@ -67,11 +67,17 @@ export default function DetailsPanel({
                         <p className="text-xs text-gray-400">Dates</p>
                         <div className="flex items-center gap-4">
                             <div>
-                                <CalendarPicker className="rounded-full bg-gray-100 text-gray-500" />
+                                <CalendarPicker
+                                    value={task.date}
+                                    onDateSelect={(newDate: string) => updateTask({ date: newDate })}
+                                />
                             </div>
 
                             <div>
-                                <CalendarPicker className="rounded-full bg-gray-100 text-gray-500" />
+                                <CalendarPicker
+                                    value={task.date}
+                                    onDateSelect={(newDate: string) => updateTask({ date: newDate })}
+                                />
                             </div>
                         </div>
                     </div>

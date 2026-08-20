@@ -10,6 +10,8 @@ import { Project } from "../types/Task";
 import PriorityDropdown from "../components/PriorityDropdown";
 import CalendarPicker from "../components/CalendarPicker";
 
+const API_URL = "http://localhost:3001";
+
 export default function ProjectsPage() {
 
   const { projects, setProjects } = useTasks();
@@ -37,38 +39,71 @@ export default function ProjectsPage() {
     }));
   }
 
-  const handleAddProject = () => {
+  const handleAddProject = async () => {
     if (!newProjectTitle.trim()) return;
-    const newProject: Project = {
-      id: Math.max(0, ...projects.map((p) => p.id)) + 1,
-      title: newProjectTitle,
-      priority: "No priority",
-      lead: "Admin",
-      dueDate: "",
-    };
-    setProjects((prev) => [...prev, newProject]);
-    setNewProjectTitle("");
-    setIsAddingProject(false);
+
+    try {
+      const res = await fetch(`${API_URL}/projects`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: newProjectTitle }),
+      });
+
+      if (!res.ok) throw new Error("Failed to create project");
+      const newProject: Project = await res.json();
+
+      setProjects((prev) => [...prev, newProject]);
+      setNewProjectTitle("");
+      setIsAddingProject(false);
+    } catch (err) {
+      console.error("Error adding project:", err);
+    }
   };
 
   const filteredProjects = projects.filter((p) =>
     p.title.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  const updateProjectPriority = (projectId: number, newPriority: string) => {
-    setProjects((prev) =>
-      prev.map((p) => (p.id === projectId ? { ...p, priority: newPriority } : p))
-    );
+  const updateProjectPriority = async (projectId: number, newPriority: string) => {
+    try {
+      const res = await fetch(`${API_URL}/projects/${projectId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ priority: newPriority }),
+      });
+      if (!res.ok) throw new Error("Failed to update project priority");
+      const updated: Project = await res.json();
+      setProjects((prev) => prev.map((p) => (p.id === projectId ? updated : p)));
+    } catch (err) {
+      console.error("Error updating project priority:", err);
+    }
   };
 
-  const updateProjectDueDate = (projectId: number, newDate: string) => {
-    setProjects((prev) =>
-      prev.map((p) => (p.id === projectId ? { ...p, dueDate: newDate } : p))
-    );
+  const updateProjectDueDate = async (projectId: number, newDate: string) => {
+    try {
+      const res = await fetch(`${API_URL}/projects/${projectId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dueDate: newDate }),
+      });
+      if (!res.ok) throw new Error("Failed to update project due date");
+      const updated: Project = await res.json();
+      setProjects((prev) => prev.map((p) => (p.id === projectId ? updated : p)));
+    } catch (err) {
+      console.error("Error updating project due date:", err);
+    }
   };
 
-  const handleDeleteProject = (projectId: number) => {
-    setProjects((prev) => prev.filter((p) => p.id !== projectId));
+  const handleDeleteProject = async (projectId: number) => {
+    try {
+      const res = await fetch(`${API_URL}/projects/${projectId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete project");
+      setProjects((prev) => prev.filter((p) => p.id !== projectId));
+    } catch (err) {
+      console.error("Error deleting project:", err);
+    }
   };
 
   const [openMenuProjectId, setOpenMenuProjectId] = useState<number | null>(null);
@@ -152,6 +187,7 @@ export default function ProjectsPage() {
 
                       <td>
                         <CalendarPicker
+                          value={project.dueDate}
                           onDateSelect={(newDate: string) => updateProjectDueDate(project.id, newDate)}
                         />
                       </td>
