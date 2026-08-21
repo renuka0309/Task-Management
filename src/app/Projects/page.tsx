@@ -10,7 +10,7 @@ import { Project } from "../types/Task";
 import PriorityDropdown from "../components/PriorityDropdown";
 import CalendarPicker from "../components/CalendarPicker";
 
-const API_URL = "http://localhost:3001";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function ProjectsPage() {
 

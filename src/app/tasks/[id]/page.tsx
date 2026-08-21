@@ -5,7 +5,7 @@ import MainContent from "@/app/components/MainContent";
 import Sidebar from "@/app/components/Sidebar";
 import { Task } from "@/app/types/Task";
 
-const API_URL = "http://localhost:3001";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function TaskDetail() {
   const params = useParams();

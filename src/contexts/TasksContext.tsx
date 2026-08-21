@@ -1,6 +1,6 @@
 
 "use client"
-const API_URL = "http://localhost:3001";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { Task, Column, Update, Project } from "@/app/types/Task";
 

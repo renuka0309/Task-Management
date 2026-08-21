@@ -1,5 +1,5 @@
 "use client"
-const API_URL = "http://localhost:3001";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 import { useState } from "react";
 import { Tag, MoreHorizontal, Lock, Eye, Share2, Ellipsis, PanelLeft } from "lucide-react";
 import DetailsPanel from "./DetailsPanel";
