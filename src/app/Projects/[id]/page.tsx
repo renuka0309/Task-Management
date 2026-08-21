@@ -15,6 +15,7 @@ export default function ProjectDetail() {
     openMenuTaskId, setOpenMenuTaskId,
     handleAddTask, handleDeleteTask,
     updateTaskPriority, 
+    updateTaskDueDate,
   } = useTasks();
 
   const project = projects.find((p) => p.id === projectId);
@@ -40,7 +41,7 @@ export default function ProjectDetail() {
         openMenuTaskId={openMenuTaskId}
         setOpenMenuTaskId={setOpenMenuTaskId}
         updateTaskPriority={updateTaskPriority}
-        
+        updateTaskDueDate={updateTaskDueDate}
       />
     </div>
   );

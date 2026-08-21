@@ -13,10 +13,8 @@ export default function Profile() {
   return (
     <div className="flex min-h-screen bg-white text-sm text-[#202020]">
 
-      {/* Left Sidebar */}
       <aside className="w-[235px] border-r border-gray-200 px-2 py-4">
 
-        {/* Back to app */}
         <button 
         onClick={()=> router.push("/tasks")}
         className="mb-5 flex items-center gap-2 px-2 text-sm">
@@ -24,13 +22,11 @@ export default function Profile() {
           <span>Back to app</span>
         </button>
 
-        {/* Search */}
         <div className="mb-2 flex h-[30px] items-center gap-2 rounded-md border border-gray-200 px-2 text-gray-400">
           <Search size={15} />
           <span>Search</span>
         </div>
 
-        {/* Navigation */}
         <ul className="space-y-1">
           <li>
             <button 
@@ -61,7 +57,6 @@ export default function Profile() {
         </ul>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-1">
          <div className="mx-auto w-[585px] pt-[115px]">
           {activeTab === "profile" && <ProfilePanel />}

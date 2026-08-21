@@ -31,7 +31,6 @@ export default function Updates({ updates }: { updates: Update[] }) {
             </div>
           ))}
 
-          {/* Static entry — always shown, represents task creation */}
           <div className="flex w-[297px] min-w-[85px] gap-2 py-3">
             <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#F5F5F5] overflow-hidden">
               <Image

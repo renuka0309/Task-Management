@@ -11,7 +11,6 @@ const PRIORITY_COLORS: Record<string, string> = {
   "Low": "text-gray-500",
 };
 
-// Config-driven fields — add more by just adding an entry here
 const FILTER_CONFIG: Record<string, { type: "checklist" | "avatar-list" | "date"; options?: string[] }> = {
   "Status": { type: "checklist", options: ["Backlog", "To Do", "Doing", "Completed", "On Hold"] },
   "Priority": { type: "checklist", options: ["No priority", "Urgent", "High", "Medium", "Low"] },
