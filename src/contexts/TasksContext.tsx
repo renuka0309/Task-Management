@@ -28,17 +28,11 @@ type TasksContextType = {
 
   updateTask: (columnTitle: string, taskId: number, updates: Partial<Task>) => void;
   updateTaskPriority: (columnTitle: string, taskId: number, newPriority: string) => void;
-
+  updateTaskDueDate: (columnTitle: string, taskId: number, newDate: string) => void;
   getTaskById: (taskId: number) => { task: Task; columnTitle: string } | null;
 };
 
 const TasksContext = createContext<TasksContextType | null>(null);
-
-// const initialProjects: Project[] = [
-//   { id: 1, title: "Design Homepage", priority: "High", lead: "Admin", dueDate: "12 Sep 2026" },
-//   { id: 2, title: "Develop Login Feature", priority: "Low", lead: "CN", dueDate: "15 Sep 2026" },
-//   { id: 3, title: "Test Payment Gateway", priority: "Medium", lead: "Admin", dueDate: "18 Sep 2026" },
-// ];
 
 export function TasksProvider({ children }: { children: ReactNode }) {
   const [columns, setColumns] = useState<Column[]>([]);
@@ -185,6 +179,9 @@ export function TasksProvider({ children }: { children: ReactNode }) {
     return null;
   };
 
+  const updateTaskDueDate = async (columnTitle: string, taskId: number, newDate: string) => {
+  await updateTask(columnTitle, taskId, { date: newDate });
+};
   return (
     <TasksContext.Provider
       value={{
@@ -203,7 +200,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         handleDeleteTask,
         updateTask,
         updateTaskPriority,
-
+        updateTaskDueDate,
         getTaskById,
       }}
     >

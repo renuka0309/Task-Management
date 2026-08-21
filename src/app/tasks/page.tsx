@@ -42,6 +42,7 @@ export default function TasksBoard() {
     openMenuTaskId, setOpenMenuTaskId,
     handleAddTask, handleDeleteTask,
     updateTaskPriority,
+    updateTaskDueDate,
   } = useTasks();
 
   const handleClearColumn = (columnTitle: string) => {
@@ -278,6 +279,7 @@ export default function TasksBoard() {
               openMenuTaskId={openMenuTaskId}
               setOpenMenuTaskId={setOpenMenuTaskId}
               updateTaskPriority={updateTaskPriority}
+              updateTaskDueDate={updateTaskDueDate}
             />
           </div>
         )

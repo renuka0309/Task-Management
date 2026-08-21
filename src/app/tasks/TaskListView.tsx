@@ -24,6 +24,7 @@ type TaskListViewProps = {
   openMenuTaskId: number | null;
   setOpenMenuTaskId: (id: number | null) => void;
   updateTaskPriority: (columnTitle: string, taskId: number, newPriority: string) => void;
+  updateTaskDueDate: (columnTitle: string, taskId: number, newDate: string) => void;
 };
 
 export default function TaskListView({
@@ -37,6 +38,7 @@ export default function TaskListView({
   openMenuTaskId,
   setOpenMenuTaskId,
   updateTaskPriority,
+  updateTaskDueDate,
 }: TaskListViewProps) {
   const grouped = {
     "To Do": tasks.filter((t) => t.status === "To Do"),
@@ -77,16 +79,16 @@ export default function TaskListView({
                         {task.title}
                       </Link>
                     </td>
-                      
+
                     <td>
                       <PriorityDropdown
                         value={task.priority ?? "No priority"}
-                        onChange={(newPriority) =>{
+                        onChange={(newPriority) => {
                           console.log("Clicked:", newPriority, "for task:", task.id, "status:", status);
-                            updateTaskPriority(status, task.id, newPriority)
+                          updateTaskPriority(status, task.id, newPriority)
                         }
-                           
-                          }
+
+                        }
                       />
                     </td>
                     <td>
@@ -95,7 +97,8 @@ export default function TaskListView({
                     <td className="text-[#171717]">{task.date && (
                       <span className="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded w-fit">
                         <CalendarPicker
-
+                          value={task.date}
+                          onDateSelect={(newDate: string) => updateTaskDueDate(status, task.id, newDate)}
                         />
 
                       </span>
